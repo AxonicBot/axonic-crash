@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AXONIC - Dashboard</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Nosifer&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    :root {
+      --primary: #8A0303;
+      --accent: #ff0000;
+      --dark: #0a0a0a;
+      --glass: rgba(20, 0, 0, 0.7);
+      --border: rgba(138, 3, 3, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--dark);
+      background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/assets/bg.jpg'); 
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #fff;
+      font-family: 'UnifrakturCook', cursive;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      background-size: 100% 2px, 3px 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* HEADER */
+    .header {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 25px;
+      border: 1px solid var(--border);
+      margin-bottom: 30px;
+      background: var(--glass);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      animation: scan 3s infinite linear;
+    }
+
+    @keyframes scan {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .user-info { display: flex; align-items: center; gap: 20px; }
+
+    .user-info img {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      object-fit: cover;
+    }
+
+    .user-text h2 {
+      font-family: 'Nosifer', cursive;
+      font-size: 22px;
+      color: var(--accent);
+      text-shadow: 0 0 10px var(--primary);
+      margin-bottom: 5px;
+    }
+
+    .user-text p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: #ccc;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .logout-btn {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid var(--primary);
+      color: var(--accent);
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'UnifrakturCook', cursive;
+      font-size: 16px;
+      transition: 0.3s;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .logout-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 0 15px var(--primary);
+    }
+
+    /* STATUS BAR */
+    .status-bar {
+      width: 100%; max-width: 900px;
+      background: rgba(20, 0, 0, 0.4);
+      border-left: 4px solid var(--accent);
+      padding: 12px; text-align: center;
+      margin-bottom: 40px; border-radius: 4px;
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: 1px;
+    }
+
+    .status-active {
+      color: #00ff00; font-weight: bold;
+      animation: blink 1.5s infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    /* GRID MENU */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 25px;
+      width: 100%; max-width: 900px;
+      padding-bottom: 50px;
+    }
+
+    .card-menu {
+      background: rgba(30, 30, 30, 0.6);
+      border: 1px solid #333;
+      padding: 35px 20px;
+      border-radius: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(5px);
+    }
+
+    .card-menu:hover {
+      transform: translateY(-8px);
+      background: rgba(40, 0, 0, 0.7);
+      border-color: var(--primary);
+      box-shadow: 0 10px 30px rgba(138, 3, 3, 0.3);
+    }
+
+    .card-menu i {
+      font-size: 45px; color: #888; margin-bottom: 20px;
+      transition: 0.4s;
+    }
+
+    .card-menu:hover i {
+      color: var(--accent);
+      filter: drop-shadow(0 0 10px var(--accent));
+      transform: scale(1.1);
+    }
+
+    .card-menu h3 { font-size: 20px; color: #eee; letter-spacing: 1px; }
+
+    .footer {
+      margin-top: auto; font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; color: #555; text-align: center;
+    }
+
+    .fade-in {
+      animation: fadeInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      opacity: 0; transform: translateY(30px);
+    }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+    .d-1 { animation-delay: 0.1s; }
+    .d-2 { animation-delay: 0.2s; }
+    .d-3 { animation-delay: 0.3s; }
+    .d-4 { animation-delay: 0.4s; }
+
+    @media (max-width: 600px) {
+      .header { flex-direction: column; gap: 15px; text-align: center; }
+      .user-info { flex-direction: column; gap: 10px; }
+      .logout-btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header fade-in">
+    <div class="user-info">
+      <img src="https://files.catbox.moe/55suxd.png" alt="User">
+      <div class="user-text">
+        <h2>AXONIC</h2>
+        <p>MEMBER AREA // LV.99</p>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="confirmLogout()">
+      <i class="fas fa-power-off"></i> SHUT DOWN
+    </button>
+  </div>
+
+  <div class="status-bar fade-in d-1">
+    <i class="fas fa-satellite-dish"></i> SYSTEM STATUS: <span class="status-active">ONLINE • ENCRYPTED</span>
+  </div>
+
+  <div class="dashboard-grid">
+    
+    <div class="card-menu fade-in d-1" onclick="bukaHalaman('injector.html', 'Injector')">
+      <i class="fas fa-syringe"></i>
+      <h3>INJECTOR</h3>
+    </div>
+
+    <div class="card-menu fade-in d-2" onclick="bukaHalaman('files.html', 'Files')">
+      <i class="fas fa-folder-tree"></i>
+      <h3>FILES</h3>
+    </div>
+
+    <div class="card-menu fade-in d-3" onclick="bukaHalaman('terminal.html', 'Console')">
+      <i class="fas fa-terminal"></i>
+      <h3>CONSOLE</h3>
+    </div>
+
+    <div class="card-menu fade-in d-4" onclick="bukaHalaman('settings.html', 'Settings')">
+      <i class="fas fa-gears"></i>
+      <h3>SETTINGS</h3>
+    </div>
+
+  </div>
+
+  <div class="footer fade-in d-4">
+    &copy; 2025 AXONIC CRASH.
+  </div>
+
+  <script>
+    const swalCustom = Swal.mixin({
+      background: '#111',
+      color: '#fff',
+      confirmButtonColor: '#8A0303',
+      cancelButtonColor: '#333',
+      backdrop: `rgba(0,0,0,0.8)`
+    });
+
+    /**
+     * Fungsi Utama untuk Pindah Halaman
+     * url: alamat file tujuan (misal: 'injector.html')
+     * name: nama menu untuk tampilan loading
+     */
+    function bukaHalaman(url, name) {
+      swalCustom.fire({
+        title: 'ACCESSING ' + name.toUpperCase(),
+        html: 'Menghubungkan ke server...',
+        timer: 1000, // Delay 1 detik seolah-olah loading
+        timerProgressBar: true,
+        showConfirmButton: false,
+        willClose: () => {
+          // Arahkan ke halaman tujuan setelah timer habis
+          window.location.href = url;
+        }
+      });
+    }
+
+    function confirmLogout() {
+      swalCustom.fire({
+        title: 'KELUAR?',
+        text: "Sesi anda akan diakhiri.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'YA, KELUAR',
+        cancelButtonText: 'BATAL',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          swalCustom.fire({
+            title: 'SHUTTING DOWN...',
+            timer: 1500,
+            showConfirmButton: false,
+            willClose: () => {
+              window.location.href = "login.html"; 
+            }
+          });
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
